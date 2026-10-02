@@ -1,3 +1,7 @@
+<div style="text-align:center;margin:0 auto;">
+    <img src="docs/vexed-banner.jpg" style="width:100%;max-width:1200px" alt="Vexed Banner"/>
+</div>
+
 # Vexed
 
 𑅃 API Problem ([RFC 9457][]) objects that can be used as `application/problem+json` documents.

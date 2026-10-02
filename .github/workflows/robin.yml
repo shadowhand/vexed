@@ -1,0 +1,21 @@
+name: Robin
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    uses: antongulin/robin/.github/workflows/review.yml@f97948f909c068017298de5e4b0b839ede5003dc # v2.9.0
+    secrets:
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+      LLM_MODEL: ${{ vars.LLM_MODEL }}

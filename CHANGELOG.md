@@ -10,4 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - `Problem`, a mutable RFC 9457 problem data structure with JSON output.
 - `ProblemException`, a logic exception for validation failures.
-- 40 implementations of `HttpProblem`, coverting the IANA 4xx and 5xx statuses.
+- `HttpProblem`, with 40 implementations covering the IANA 4xx and 5xx statuses.
+- `ExceptionTransformer`, which maps throwables to problems with optional class and message extensions.

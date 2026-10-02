@@ -63,7 +63,7 @@ class Problem implements JsonSerializable
     }
 
     /**
-     * @throws InvalidArgumentException if the name is invalid or reserved.
+     * @throws ProblemException if the name is invalid or reserved.
      */
     final public function extend(string $name, mixed $value): self
     {

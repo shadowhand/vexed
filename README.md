@@ -62,6 +62,73 @@ There are 40 HTTP problem classes available in `Vexed\Http\Client` and `Vexed\Ht
 
 Each of the HTTP problems have an immutable `status` and `title` with the RFC 9110 reason phrase.
 
+### Exception Transformer
+
+The `Vexed\ExceptionTransformer` converts any `Throwable` into a `Problem`:
+
+```php
+use Throwable;
+use Vexed\ExceptionTransformer;
+
+$transformer = new ExceptionTransformer();
+
+try {
+    return $this->service->operation();
+} catch (Throwable $e) {
+    $problem = $transformer->transform($e);
+}
+```
+
+By default, `transform()` will return an `InternalServerError`. This can be changed by defining a `map` that
+associates a throwable class/interface with a factory that creates a problem. The transformer checks the throwable
+class first, then its parent classes from the most immediate upward, then its interfaces. The first match wins.
+When nothing matches, `InternalServerError` is returned:
+
+```php
+use Vexed\ExceptionTransformer;
+use Vexed\Http\Client\BadRequest;
+use Vexed\Http\Client\NotFound;
+
+$transformer = new ExceptionTransformer(
+    map: [
+        NotFoundException::class => fn() => new NotFound(),
+        ValidationException::class => fn(ValidationException $e) => new BadRequest()->extend('errors', $e->getErrors()),
+    ],
+    classExtension: 'exception',
+    messageExtension: 'message',
+);
+
+try {
+    $order = $this->orders->find($id);
+    $order->prepare();
+} catch (Throwable $e) {
+    $problem = $transformer->transform($e);
+}
+```
+
+The transformer can also add some extensions to the problem:
+
+- When `classExtension` is defined, it will add `$throwable::class` as an extension.
+- When `messageExtension` is defined, it will add `$throwable->getMessage()` as an extension.
+
+Both are entirely optional and disabled by default.
+
+```php
+use Throwable;
+
+$transformer = new ExceptionTransformer(
+    classExtension: 'exception',
+    messageExtension: 'message',
+);
+
+try {
+    return $this->orders->process($order);
+} catch (Throwable $e) {
+    // The problem has been extended with `{exception: string, message: string}`
+    $problem = $transformer->transform($e);
+}
+```
+
 ## Development
 
 This project uses [Mago](https://mago.carthage.software/) for lint, formatting, and static analysis.

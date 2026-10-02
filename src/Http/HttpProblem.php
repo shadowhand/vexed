@@ -11,7 +11,7 @@ use Vexed\Problem;
  */
 abstract class HttpProblem extends Problem
 {
-    public function __construct(?string $type = null, ?string $detail = null, ?string $instance = null)
+    final public function __construct(?string $type = null, ?string $detail = null, ?string $instance = null)
     {
         $this->type = $type;
         $this->detail = $detail;

@@ -6,9 +6,9 @@ php-version = "8.4.0"
 
 [source]
 workspace = "."
-paths = ["src/", "tests/", "demo/"]
+paths = ["src/", "tests/"]
 includes = ["vendor"]
-excludes = ["tests/Fixtures"]
+excludes = []
 
 [source.glob]
 literal-separator = true
@@ -20,9 +20,8 @@ preset = "default"
 integrations = ["phpunit"]
 
 [linter.rules]
-file-name = { exclude = ["demo/**/*.php"] }
-no-ini-set = { exclude = ["demo/bootstrap.php"] }
 assertion-style = { style = "this" }
+excessive-parameter-list = { constructor-threshold = 6 }
 too-many-methods = { exclude = ["tests/**/*.php"] }
 ambiguous-constant-access = { enabled = true }
 ambiguous-function-call = { enabled = true }

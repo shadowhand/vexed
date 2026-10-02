@@ -1,10 +1,6 @@
 # Vexed
 
-𑅃 Variable API Problem ([RFC 9457][]) data structure.
-
-Provides objects for common issues as `application/problem+json` documents.
-And turns any `Throwable` into a `Problem`.
-And allows defining completely custom `Problem` types.
+𑅃 API Problem ([RFC 9457][]) objects that can be used as `application/problem+json` documents.
 
 [RFC 9457]: https://www.rfc-editor.org/rfc/rfc9457
 
@@ -17,26 +13,6 @@ composer require vexed/vexed
 ## Usage
 
 ```php
-use Vexed\Http\NotFound;
-
-// Create a problem instance
-$problem = new NotFound();
-
-// Convert the problem into a PSR-7 response using PSR-17 factories
-$response = $problem->asResponse($responseFactory, $streamFactory);
-
-// Or just convert it to JSON
-$json = $problem->asJson();
-
-// Or customize some properties
-$problem = $problem->withDetail('This page is only available to authenticated users.');
-```
-
-### Custom
-
-The `Problem` class is generic and can be used by itself:
-
-```php
 use Vexed\Problem;
 
 $problem = new Problem(
@@ -46,8 +22,17 @@ $problem = new Problem(
     status: 400,
 );
 
-// Now works just like HTTP problems
-$json = $problem->asJson();
+// They can be modified in place...
+$problem->instance = '/cart/checkout';
+
+// They can have extensions...
+$problem->extend('refcode', 'MPQ.100');
+
+// They can be converted to arrays...
+$arr = $problem->toArray();
+
+// They can be encoded directly to JSON...
+$json = json_encode($problem);
 ```
 
 Any of the standard RFC properties can be set:
@@ -58,53 +43,20 @@ Any of the standard RFC properties can be set:
 - `status` the HTTP status code
 - `instance` a URI reference that identifies the specific occurrence of the problem
 
-Additional extensions can be added using `withExtension($name, $value)`:
+_Note that these names are reserved and CANNOT be used as extension names. Attempting to do so will cause
+a `ProblemException` to be thrown._
 
-```php
-$problem = $problem->withExtension('refcode', 'MPQ.100');
-```
+### HTTP Catalog
 
-### Throwables
+There are 40 HTTP problem classes available in `Vexed\Http\Client` and `Vexed\Http\Server`, such as:
 
-```php
-use Vexed\Error;
+- `Vexed\Http\Client\BadRequest`
+- `Vexed\Http\Client\NotFound`
+- `Vexed\Http\Server\InternalServerError`
+- `Vexed\Http\Server\NotImplemented`
+- ... and 36 other classes.
 
-// Convert any `Throwable` into a problem instance
-$problem = new Error($throwable);
-
-// Now works like any other problem
-$json = $problem->asJson();
-```
-
-By default, all `Error` instances will have values like:
-
-```json
-{
-    "type": "about:blank",
-    "status": 500,
-    "title": "Server Error"
-}
-```
-
-_RFC 9457 §4.2.1 recommends that `title` be the HTTP status phrase when `type` is `about:blank`._
-
-The exception class (without namespace) can be added to the problem `details` by setting `named: true`:
-
-```php
-$problem = new Error($throwable, named: true); // {"detail": "RuntimeException"}
-```
-
-Or, if you prefer to have the exception name in an extension property:
-
-```php
-$problem = new Error($throwable, named: 'class'); // {"class": "RuntimeException"}
-```
-
-Or, if you prefer to have the full exception name:
-
-```
-$problem = new Error($throwable, complete: true); // {"class": "Acme\\Order\\ChargeFailedException"}
-```
+Each of the HTTP problems have an immutable `status` and `title` with the RFC 9110 reason phrase.
 
 ## Development
 

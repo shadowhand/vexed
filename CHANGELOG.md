@@ -8,4 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Initial release.
+- `Problem`, a mutable RFC 9457 problem data structure with JSON output.
+- `ProblemException`, a logic exception for validation failures.
+- 40 implementations of `HttpProblem`, coverting the IANA 4xx and 5xx statuses.

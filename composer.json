@@ -1,6 +1,17 @@
 {
     "name": "vexed/vexed",
     "description": "Variable API Problem (RFC 9457) data structure",
+    "keywords": [
+        "api-problem",
+        "error-handling",
+        "exceptions",
+        "http",
+        "json",
+        "problem-details",
+        "problem-json",
+        "rfc9457",
+        "throwable"
+    ],
     "license": "MIT",
     "type": "library",
     "authors": [
